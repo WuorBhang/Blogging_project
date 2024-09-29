@@ -2,21 +2,6 @@
 
 This project is a **RESTful Blogging API** built with Django and Django REST Framework. The API allows users to create, read, update, and delete blog posts, manage categories, tags, comments, and likes, as well as user authentication and role-based access.
 
-## Table of Contents
-
-1. [Project Overview](#project-overview)
-2. [Features](#features)
-3. [API Endpoints](#api-endpoints)
-4. [Installation](#installation)
-5. [Running the Project](#running-the-project)
-6. [Usage](#usage)
-7. [Authentication](#authentication)
-8. [Data Models](#data-models)
-9. [ERD Diagram](#erd-diagram)
-10. [Challenges Faced](#challenges-faced)
-11. [Contributing](#contributing)
-12. [License](#license)
-
 ## Project Overview
 
 The Blogging API is a backend application that provides endpoints for managing blog posts, user interactions, categories, tags, comments, and likes. Users can create an account, log in, and manage their own blog posts. Admins and editors have different roles with specific permissions for managing posts.
@@ -61,10 +46,9 @@ This API serves as the backend for a blogging platform, where developers can int
 - `POST /api/register/` - Register a new user.
 - `POST /api/login/` - Obtain JWT tokens (login).
 
-## Installation
 
-### Prerequisites
 
+## Installation Prerequisites
 - Python 3.8+
 - Django 4.0+
 - Django REST Framework
