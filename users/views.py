@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import User
-from .serializers import RegisterSerializer, LoginSerializer, UserProfileSerializer
+from .serializers import RegisterSerializer, LoginSerializer, ProfileSerializer
 
 class RegisterView(APIView):
     def post(self, request, *args, **kwargs):
@@ -42,7 +42,7 @@ class UserDeleteView(generics.DestroyAPIView):
 
 class ProfileDetailView(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = UserProfileSerializer
+    serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):

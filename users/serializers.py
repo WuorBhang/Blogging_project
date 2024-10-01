@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
-from .models import User  # Import your custom User model
+from .models import User, Profile
 
 
 User = get_user_model()
@@ -73,7 +73,9 @@ class LoginSerializer(serializers.Serializer):
 
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
+
     class Meta:
-        model = User
-        fields = ['username', 'email', 'role', 'date_of_birth', 'profile_photo'] 
+        model = Profile
+        fields = ['username', 'bio', 'role', 'profile_picture']
