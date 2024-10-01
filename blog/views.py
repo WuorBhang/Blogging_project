@@ -79,7 +79,7 @@ def updatePost(request, pk):
     except Post.DoesNotExist:
         return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = PostSerializer(post, data=request.data, partial=True)  # Use partial=True for PATCH
+    serializer = PostSerializer(post, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
