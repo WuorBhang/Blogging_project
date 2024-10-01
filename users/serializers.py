@@ -1,7 +1,11 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 from django.contrib.auth.password_validation import validate_password
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.utils.translation import gettext_lazy as _
+from .models import User  # Import your custom User model
+
 
 User = get_user_model()
 
@@ -10,35 +14,66 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'role']
 
+
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True, required=True)
+    password_confirm = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'password2', 'role']
-
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
+        fields = ['username', 'email', 'password', 'password_confirm']
+    
+    def validate(self, data):
+        # Check if both passwords match
+        if data['password'] != data['password_confirm']:
             raise serializers.ValidationError({"password": "Password fields didn't match."})
-        return attrs
+        return data
 
     def create(self, validated_data):
-        user = User.objects.create(
+        # Create a new user with the validated data
+        user = User.objects.create_user(
             username=validated_data['username'],
-            email=validated_data['email'],
-            role=validated_data['role']
+            password=validated_data['password']
         )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+        # Generate and return a token for the new user
+        token = Token.objects.create(user=user)
+        return {'user': user, 'token': token.key}
+
+
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField(write_only=True)
+    username = serializers.CharField(required=True)
+    password = serializers.CharField(write_only=True, required=True)
 
-    def validate(self, attrs):
-        user = User.objects.filter(username=attrs['username']).first()
-        if user and user.check_password(attrs['password']):
-            return user
-        raise serializers.ValidationError("Invalid credentials")
+    def validate(self, data):
+        # Extract username and password from the request data
+        username = data.get('username')
+        password = data.get('password')
+
+        # Authenticate the user
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise serializers.ValidationError(_('Invalid login credentials.'))
+
+        # Check if the user is active
+        if not user.is_active:
+            raise serializers.ValidationError(_('User account is disabled.'))
+
+        # Get or create the token for the authenticated user
+        token, created = Token.objects.get_or_create(user=user)
+        
+        # Return the validated data, including the token and user details
+        return {
+            'token': token.key,
+            'user': {
+                'username': user.username,
+                'email': user.email,
+            }
+        }
+
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'role', 'date_of_birth', 'profile_photo'] 

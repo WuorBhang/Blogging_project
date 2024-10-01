@@ -66,24 +66,25 @@ def postDetail(request, pk):
 
 @api_view(['POST'])
 def createPost(request):
-    serializer = PostSerializer(data= request.data)
+    serializer = PostSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
+        serializer.save(author=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['PUT'])
+@api_view(['PUT', 'PATCH'])
 def updatePost(request, pk):
     try:
-        post = Post.objects.get(id=pk)
+        post = Post.objects.get(pk=pk)
     except Post.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-    
-    serializer = PostSerializer(post, data=request.data)
-    
+        return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = PostSerializer(post, data=request.data, partial=True)  # Use partial=True for PATCH
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['DELETE'])
 def deletePost(request, pk):

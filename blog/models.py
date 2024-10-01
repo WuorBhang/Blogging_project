@@ -28,7 +28,7 @@ class Post(models.Model):
     published_date = models.DateTimeField(null=True, blank=True) 
 
     class Meta:
-        ordering = ('-published_date', '-date_created')
+        ordering = ('id', '-id')
 
     def comment_count(self):
         return self.comments.count()
