@@ -31,7 +31,7 @@ class Post(models.Model):
         ordering = ('id', '-id')
 
     def comment_count(self):
-        return self.comments.count()
+        return self.comment_set.all().count()
 
     def like_count(self):
         return self.likes.count()
