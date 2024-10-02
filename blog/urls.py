@@ -3,8 +3,8 @@ from . import views
 
 urlpatterns = [
     path('', views.apiOverview, name="api-overview"),
-    path('posts/', views.postList, name="postlist"),
-    path('posts/<str:pk>/', views.postDetail, name="postdetail"),
+    path('postlist/', views.postList, name="postlist"),
+    path('postdetail/<str:pk>/', views.postDetail, name="postdetail"),
     path('createpost/', views.createPost, name="createpost"),
     path('updatepost/<str:pk>/', views.updatePost, name="updatepost"),
     path('deletepost/<str:pk>/', views.deletePost, name="deletepost"),
